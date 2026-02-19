@@ -1,9 +1,9 @@
 # PemrogramanFramework
 
-## Identity
-**Name:** Muhammad Irsyad Dimas Abdillah  
+## Identitas
+**Nama:** Muhammad Irsyad Dimas Abdillah  
 **NIM:** 2341720088  
-**Class:** TI-3F
+**Kelas:** TI-3F
 
-## About This Repository
-This repository is created for learning and practicing Framework Programming (Pemrograman Framework) as part of the coursework for TI-3F class.
+## Tentang Repository Ini
+Repository ini dibuat untuk belajar dan mempraktikkan Pemrograman Framework sebagai bagian dari mata kuliah kelas TI-3F.
