@@ -42,6 +42,10 @@ a {
   text-decoration: none;
 }
 
+.big{
+  font-size: 1.5rem;
+}
+
 .AppFooter {
   background: #171717;
   color: #fff;
