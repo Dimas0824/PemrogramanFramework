@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import Navbar from "../navbar";
 
-const disblenavbar = ["/auth/login", "/auth/register", "/404"];
+const disableNavbarRoutes = ["/auth/login", "/auth/register", "/404", "/_error"];
 
 type AppShellProps = {
     children: React.ReactNode;
@@ -11,10 +11,11 @@ const AppShell = (props: AppShellProps) => {
     const { children } = props;
     const router = useRouter();
     const { pathname } = router;
+    const shouldHideNavbar = disableNavbarRoutes.includes(pathname);
 
     return (
         <main>
-            {!disblenavbar.includes(pathname) && <Navbar />}
+            {!shouldHideNavbar && <Navbar />}
             {children}
         </main>
     )
