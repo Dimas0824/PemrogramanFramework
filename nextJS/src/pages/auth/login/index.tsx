@@ -2,10 +2,10 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import styles from "./login.module.css";
 
-const HalamanLogin = () => {
+const TampilanLogin = () => {
     const { push } = useRouter();
 
-    const handlerLogin = () => {
+    const handleLogin = () => {
         localStorage.setItem("isLogin", "true");
         push("/produk");
     }
@@ -15,7 +15,7 @@ const HalamanLogin = () => {
             <div className="bg-white/95 backdrop-blur-md px-8 py-10 rounded-[32px] shadow-2xl w-full max-w-[340px] flex flex-col items-center gap-8 border border-white/40">
                 <div className="w-full flex flex-col gap-5 px-2">
                     <button
-                        onClick={() => handlerLogin()}
+                        onClick={() => handleLogin()}
                         className="w-full bg-[#111827] text-white py-2.5 rounded-full font-bold text-base hover:bg-slate-800 transition-all cursor-pointer shadow-md active:scale-95"
                     >
                         Login
@@ -30,4 +30,4 @@ const HalamanLogin = () => {
     )
 }
 
-export default HalamanLogin;
+export default TampilanLogin;
