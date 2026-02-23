@@ -1,19 +1,23 @@
+import { useRouter } from "next/router";
 import Navbar from "../navbar";
+
+const disblenavbar = ["/auth/login", "/auth/register"];
 
 type AppShellProps = {
     children: React.ReactNode;
 }
 
-const AppShell = ({ children }: AppShellProps) => (
-    <div className="min-h-screen flex flex-col bg-white text-black">
-        <Navbar />
-        <main className="flex-1">
+const AppShell = (props: AppShellProps) => {
+    const { children } = props;
+    const router = useRouter();
+    const { pathname } = router;
+
+    return (
+        <main>
+            {!disblenavbar.includes(pathname) && <Navbar />}
             {children}
         </main>
-        <footer className=" bg-gray-900 text-white text-center py-6 mb-5 h-10 mt-10 ">
-            <p className="text-sm">Praktikum Next.js Layout — Footer muncul di semua halaman</p>
-        </footer>
-    </div>
-)
+    )
+}
 
 export default AppShell;
