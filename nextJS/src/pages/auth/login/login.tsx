@@ -1,8 +1,6 @@
-import { useRouter } from "next/router";
-import TampilanLogin from ".";
+import TampilanLogin from "./index";
 
 const HalamanLogin = () => {
-    const { push } = useRouter();
     return (
         <>
             <TampilanLogin />
