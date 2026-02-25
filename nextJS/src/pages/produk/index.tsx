@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 type ProductType =
     {
@@ -11,20 +11,12 @@ type ProductType =
 
 const currencyFormatter = new Intl.NumberFormat("id-ID");
 
-const getSizeTone = (size: string) => {
-    const normalizedSize = size.toUpperCase();
-
-    if (normalizedSize === "S") return "bg-emerald-400/20 text-emerald-200 ring-1 ring-emerald-300/40";
-    if (normalizedSize === "M") return "bg-sky-400/20 text-sky-200 ring-1 ring-sky-300/40";
-    if (normalizedSize === "L") return "bg-violet-400/20 text-violet-200 ring-1 ring-violet-300/40";
-    if (normalizedSize === "XL") return "bg-amber-400/20 text-amber-200 ring-1 ring-amber-300/40";
-    return "bg-slate-400/20 text-slate-200 ring-1 ring-slate-300/40";
-};
-
 const kategori = () => {
     // const [isLogin, setIsLogin] = useState(false);
     // const { push } = useRouter();
     const [products, setProducts] = useState<ProductType[]>([]);
+    const [isRefreshing, setIsRefreshing] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     // useEffect(() => {
     //   if (!isLogin) {
@@ -32,17 +24,29 @@ const kategori = () => {
     //   }
     // },[]);
 
-    useEffect(() => {
-        fetch("/api/produk")
-            .then((response) => response.json())
-            .then((responsedata) => {
-                //console.log("Data produk:", responsedata.data);
-                setProducts(responsedata.data);
-            })
-            .catch((error) => {
-                console.error("Error fetching produk:", error);
-            });
+    const fetchProducts = useCallback(async () => {
+        setIsRefreshing(true);
+        setErrorMessage("");
+
+        try {
+            const response = await fetch("/api/produk", { cache: "no-store" });
+            if (!response.ok) {
+                throw new Error(`Request gagal dengan status ${response.status}`);
+            }
+
+            const responsedata = await response.json();
+            setProducts(responsedata.data ?? []);
+        } catch (error) {
+            console.error("Error fetching produk:", error);
+            setErrorMessage("Gagal memuat data produk. Coba refresh lagi.");
+        } finally {
+            setIsRefreshing(false);
+        }
     }, []);
+
+    useEffect(() => {
+        fetchProducts();
+    }, [fetchProducts]);
 
     return (
         <div className="mx-auto w-full max-w-5xl px-4 py-10 sm:px-6">
@@ -56,10 +60,27 @@ const kategori = () => {
                     </h1>
                 </div>
 
-                <div className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                    {products.length} Produk
+                <div className="flex items-center gap-2">
+                    <button
+                        type="button"
+                        onClick={fetchProducts}
+                        disabled={isRefreshing}
+                        className="rounded-md border border-slate-300 bg-slate-900 px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-600 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-300"
+                    >
+                        {isRefreshing ? "Memuat..." : "Refresh Data"}
+                    </button>
+
+                    <div className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                        {products.length} Produk
+                    </div>
                 </div>
             </div>
+
+            {errorMessage && (
+                <p className="mb-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-800 dark:bg-red-950/40 dark:text-red-300">
+                    {errorMessage}
+                </p>
+            )}
 
             <div className="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
                 <div className="overflow-x-auto">
@@ -88,7 +109,7 @@ const kategori = () => {
                                         colSpan={4}
                                         className="px-5 py-10 text-center text-sm text-slate-500 dark:text-slate-400"
                                     >
-                                        Belum ada data produk.
+                                        {isRefreshing ? "Memuat data produk..." : "Belum ada data produk."}
                                     </td>
                                 </tr>
                             ) : (
@@ -124,8 +145,6 @@ const kategori = () => {
                                                 className={[
                                                     "inline-flex min-w-12 items-center justify-center rounded-full px-3 py-1 text-xs font-semibold uppercase",
                                                     "border border-slate-200 bg-slate-50 text-slate-700 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300",
-                                                    // optional: keep your tone function but make it softer
-                                                    // getSizeTone(product.size),
                                                 ].join(" ")}
                                             >
                                                 {product.size}
