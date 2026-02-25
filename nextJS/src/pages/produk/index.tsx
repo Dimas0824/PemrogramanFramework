@@ -6,6 +6,7 @@ type ProductType =
         name: string
         price: number
         size: string
+        category: string
     }
 
 const currencyFormatter = new Intl.NumberFormat("id-ID");
@@ -71,6 +72,9 @@ const kategori = () => {
                                 <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-400">
                                     Harga
                                 </th>
+                                <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-400">
+                                    Kategori
+                                </th>
                                 <th className="px-5 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-400">
                                     Ukuran
                                 </th>
@@ -81,7 +85,7 @@ const kategori = () => {
                             {products.length === 0 ? (
                                 <tr>
                                     <td
-                                        colSpan={3}
+                                        colSpan={4}
                                         className="px-5 py-10 text-center text-sm text-slate-500 dark:text-slate-400"
                                     >
                                         Belum ada data produk.
@@ -109,6 +113,10 @@ const kategori = () => {
 
                                         <td className="px-5 py-4 text-right text-sm font-semibold tabular-nums text-slate-900 dark:text-slate-100">
                                             Rp {currencyFormatter.format(product.price)}
+                                        </td>
+
+                                        <td className="px-5 py-4 text-sm text-slate-700 dark:text-slate-300">
+                                            {product.category}
                                         </td>
 
                                         <td className="px-5 py-4 text-center">
