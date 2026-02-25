@@ -36,7 +36,15 @@ const ProdukPage = () => {
         fetchProducts();
     }, []);
 
-    return <ProductView products={products} isLoading={isLoading} errorMessage={errorMessage} />;
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
+
+    if (errorMessage) {
+        return <div>{errorMessage}</div>;
+    }
+
+    return <ProductView products={products} />;
 };
 
 export default ProdukPage;

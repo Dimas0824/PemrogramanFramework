@@ -1,0 +1,54 @@
+.produk {
+    width: 100%;
+    padding: 0 5%;
+
+    &__title {
+        text-align: center;
+        font-size: 44px;
+        font-weight: 700;
+        margin: 8px 0 20px;
+    }
+
+    &__content {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+
+        &__item {
+            width: 200px;
+
+            &__image {
+                width: 200px;
+                height: 200px;
+                background: #f0f0f0;
+                margin-bottom: 8px;
+
+                img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    display: block;
+                }
+            }
+
+            &__name {
+                margin: 0 0 4px;
+                font-size: 28px;
+                font-weight: 700;
+            }
+
+            &__category {
+                margin: 0 0 6px;
+                font-size: 18px;
+                color: #888;
+            }
+
+            &__price {
+                margin: 0;
+                font-size: 22px;
+                color: #ff5722;
+                font-weight: 700;
+            }
+        }
+    }
+}
