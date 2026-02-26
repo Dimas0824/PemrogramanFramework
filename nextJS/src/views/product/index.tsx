@@ -3,9 +3,15 @@ import styles from "../../pages/produk/product.module.scss";
 export type ProductType = {
   id: string;
   name: string;
-  price: number;
+  price: number | string | null | undefined;
   image: string;
   category: string;
+};
+
+const formatRupiah = (value: unknown): string => {
+  const parsed = Number(value);
+  const safeValue = Number.isFinite(parsed) ? parsed : 0;
+  return safeValue.toLocaleString("id-ID");
 };
 
 const TampilanProduk = ({
@@ -70,7 +76,7 @@ const TampilanProduk = ({
                 </p>
 
                 <p className={styles.produk__content__item__price}>
-                  Rp {product.price.toLocaleString("id-ID")}
+                  Rp {formatRupiah(product.price)}
                 </p>
               </div>
             </div>
