@@ -1,22 +1,19 @@
-import TampilanProduk, { ProductType } from "@/views/product";
+import TampilanProduk from "@/views/product";
 import { GetServerSideProps } from "next";
+import { ProductType } from "../types/Product.type";
 
-type HalamanProdukServerProps = {
-  products: ProductType[];
-};
-
-const HalamanProdukServer = ({ products }: HalamanProdukServerProps) => {
+const HalamanProdukServer = (props: { products: ProductType[] }) => {
   return (
     <div>
       <h1>Halaman Produk Server</h1>
-      <TampilanProduk products={products} />
+      <TampilanProduk products={props.products} />
     </div>
   )
 }
 
 export default HalamanProdukServer;
 
-export const getServerSideProps: GetServerSideProps<HalamanProdukServerProps> = async (
+export const getServerSideProps: GetServerSideProps<{ products: ProductType[] }> = async (
 ) => {
   try {
     const res = await fetch("http://localhost:3000/api/produk");
