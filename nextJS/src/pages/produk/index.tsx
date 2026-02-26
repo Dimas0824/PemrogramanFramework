@@ -14,6 +14,9 @@ const ProdukPage = () => {
 
     useEffect(() => {
         const fetchProducts = async () => {
+            const startedAt = Date.now();
+            const minimumLoadingTime = 1200;
+
             try {
                 setIsLoading(true);
                 setErrorMessage("");
@@ -29,6 +32,13 @@ const ProdukPage = () => {
                 console.error("Error fetching products:", error);
                 setErrorMessage("Gagal memuat data produk.");
             } finally {
+                const elapsed = Date.now() - startedAt;
+                const remaining = minimumLoadingTime - elapsed;
+
+                if (remaining > 0) {
+                    await new Promise((resolve) => setTimeout(resolve, remaining));
+                }
+
                 setIsLoading(false);
             }
         };
@@ -36,15 +46,11 @@ const ProdukPage = () => {
         fetchProducts();
     }, []);
 
-    if (isLoading) {
-        return <div>Loading...</div>;
-    }
-
     if (errorMessage) {
         return <div>{errorMessage}</div>;
     }
 
-    return <ProductView products={products} />;
+    return <ProductView products={products} isLoading={isLoading} />;
 };
 
 export default ProdukPage;
