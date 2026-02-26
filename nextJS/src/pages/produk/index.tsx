@@ -13,13 +13,17 @@ type ApiProductsResponse = {
 
 const ProdukPage = () => {
     const { data, error, isLoading } = useSWR<ApiProductsResponse>("/api/produk", fetcher);
+    const hasApiError = Boolean(error || (data && !data.status));
+    const isPageLoading = isLoading && !data;
+    const products = hasApiError || isPageLoading ? [] : (data?.data ?? []);
 
-    const products = isLoading ? [] : (data?.data ?? []);
-    if (error || (data && !data.status)) {
-        return <div>Gagal memuat data produk.</div>;
-    }
-
-    return <ProductView products={products} isLoading={isLoading} />;
+    return (
+        <ProductView
+            products={products}
+            isLoading={isPageLoading}
+            errorMessage={hasApiError ? "Gagal memuat data produk. Silakan coba lagi." : undefined}
+        />
+    );
 };
 
 export default ProdukPage;

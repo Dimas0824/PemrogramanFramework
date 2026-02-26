@@ -11,37 +11,56 @@ export type ProductType = {
 const TampilanProduk = ({
   products,
   isLoading = false,
+  errorMessage,
 }: {
   products: ProductType[];
   isLoading?: boolean;
+  errorMessage?: string;
 }) => {
   const skeletonItems = Array.from({ length: 6 });
+  const showEmptyState = !isLoading && !errorMessage && products.length === 0;
+  const showProducts = !isLoading && !errorMessage && products.length > 0;
 
   return (
     <div className={styles.produk}>
       <h1 className={styles.produk__title}>Daftar Produk</h1>
 
       <div className={styles.produk__content}>
+        {errorMessage ? <p className={styles.produk__content__error}>{errorMessage}</p> : null}
+
         {isLoading
           ? skeletonItems.map((_, index) => (
-            <div key={`skeleton-${index}`} className={styles.produk__content__skeleton}>
+            <div
+              key={`skeleton-${index}`}
+              className={styles.produk__content__skeleton}
+              aria-hidden="true"
+            >
               <div className={styles.produk__content__skeleton__image}></div>
               <div className={styles.produk__content__skeleton__name}></div>
               <div className={styles.produk__content__skeleton__category}></div>
               <div className={styles.produk__content__skeleton__price}></div>
             </div>
           ))
-          : products.map((product: ProductType) => (
-            <div key={product.id} className={styles.produk__content__item}>
+          : showEmptyState
+          ? (
+            <p className={styles.produk__content__empty}>Belum ada produk untuk ditampilkan.</p>
+          )
+          : showProducts
+          ? products.map((product: ProductType, index: number) => (
+            <div
+              key={product.id}
+              className={styles.produk__content__item}
+              style={{ animationDelay: `${Math.min(index, 10) * 70}ms` }}
+            >
               <div className={styles.produk__content__item__image}>
                 {product.image?.trim() ? (
                   <img src={product.image} alt={product.name} width={200} height={200} />
                 ) : (
-                  <p style={{ color: "#888", textAlign: "center" }}>Gambar belum ada</p>
+                  <p className={styles.produk__content__item__fallback}>Gambar belum ada</p>
                 )}
               </div>
 
-              <div>
+              <div className={styles.produk__content__item__details}>
                 <h4 className={styles.produk__content__item__name}>
                   {product.name}
                 </h4>
@@ -55,7 +74,8 @@ const TampilanProduk = ({
                 </p>
               </div>
             </div>
-          ))}
+          ))
+          : null}
       </div>
     </div>
   );
