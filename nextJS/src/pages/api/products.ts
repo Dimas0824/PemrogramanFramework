@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { retrieveProducts } from "../utils/db/servicefirebase";
+import { retrieveProducts } from "../../utils/db/servicefirebase";
 
 type ProductItem = {
   id: string;
