@@ -1,4 +1,5 @@
 import styles from "../../pages/produk/product.module.scss";
+import Link from "next/link";
 
 export type ProductType = {
   id: string;
@@ -53,7 +54,8 @@ const TampilanProduk = ({
           )
           : showProducts
           ? products.map((product: ProductType, index: number) => (
-            <div
+            <Link
+              href={`/produk/${product.id}`}
               key={product.id}
               className={styles.produk__content__item}
               style={{ animationDelay: `${Math.min(index, 10) * 70}ms` }}
@@ -79,7 +81,7 @@ const TampilanProduk = ({
                   Rp {formatRupiah(product.price)}
                 </p>
               </div>
-            </div>
+            </Link>
           ))
           : null}
       </div>
