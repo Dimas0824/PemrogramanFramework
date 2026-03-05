@@ -1,6 +1,6 @@
 import TampilanProduk from "@/views/product";
 import { GetServerSideProps } from "next";
-import { ProductType } from "../types/Product.type";
+import { ProductType } from "../../types/Product.type";
 
 const HalamanProdukServer = (props: { products: ProductType[] }) => {
   return (

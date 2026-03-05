@@ -1,5 +1,5 @@
 import ProductView from "@/views/product";
-import useProducts from "../utils/swr/useProducts";
+import useProducts from "../../utils/swr/useProducts";
 
 const ProdukPage = () => {
     const { products, isLoading, errorMessage } = useProducts();
