@@ -1,6 +1,7 @@
 import TampilanProduk from "@/views/product";
 import { GetServerSideProps } from "next";
 import { ProductType } from "../../types/Product.type";
+import { retrieveProducts } from "@/utils/db/servicefirebase";
 
 const HalamanProdukServer = (props: { products: ProductType[] }) => {
   return (
@@ -16,11 +17,9 @@ export default HalamanProdukServer;
 export const getServerSideProps: GetServerSideProps<{ products: ProductType[] }> = async (
 ) => {
   try {
-    const res = await fetch("http://localhost:3000/api/produk");
-    const response = await res.json();
     return {
       props: {
-        products: response.data || [],
+        products: (await retrieveProducts("products")) as ProductType[],
       },
     };
   } catch {
