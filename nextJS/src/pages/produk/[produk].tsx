@@ -1,8 +1,6 @@
-import fetcher from "@/utils/swr/fetcher";
-import { useRouter } from "next/router";
-import useSWR from "swr";
 import DetailProduk from "../../views/DetailProduct";
-import { ProductType } from "@/types/Product.type";
+import { normalizeProduct, normalizeProducts, ProductType } from "@/types/Product.type";
+import { retrieveDataByID, retrieveProducts } from "@/utils/db/servicefirebase";
 
 const HalamanProduk = ({ product }: { product: ProductType }) => {
     //digunakan client-side rendering/
@@ -31,10 +29,9 @@ export default HalamanProduk;
 
 //digunakan static-site generation/
 export async function getStaticPaths() {
-    const res = await fetch("http://localhost:3000/api/products");
-    const response = await res.json();
+    const products = normalizeProducts(await retrieveProducts("products"));
 
-    const paths = response.data.map((product: ProductType) => ({
+    const paths = products.map((product: ProductType) => ({
         params: { produk: product.id },
     }));
     // console.log("Paths yang dihasilkan untuk produk:", paths); // Debugging: Tampilkan paths yang dihasilkan
@@ -46,15 +43,18 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }: { params: { produk: string } }) {
-    const res = await fetch(`http://localhost:3000/api/produk/${params.produk}`);
-    // const respone: ProductType[] = await res.json();
-    const respone = await res.json();
+    const rawProduct = await retrieveDataByID("products", params.produk);
+    const product = rawProduct ? normalizeProduct(rawProduct) : null;
 
-    // console.log("Data produk yang diambil dari API:", respone);
+    if (!product) {
+        return {
+            notFound: true,
+        };
+    }
 
     return {
         props: {
-            product: respone.data,
+            product,
         },
     };
 }

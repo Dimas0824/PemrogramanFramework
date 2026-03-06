@@ -1,13 +1,6 @@
 import styles from "../../pages/produk/product.module.scss";
 import Link from "next/link";
-
-export type ProductType = {
-  id: string;
-  name: string;
-  price: number | string | null | undefined;
-  image: string;
-  category: string;
-};
+import { ProductType } from "@/types/Product.type";
 
 const formatRupiah = (value: unknown): string => {
   const parsed = Number(value);
@@ -49,41 +42,41 @@ const TampilanProduk = ({
             </div>
           ))
           : showEmptyState
-          ? (
-            <p className={styles.produk__content__empty}>Belum ada produk untuk ditampilkan.</p>
-          )
-          : showProducts
-          ? products.map((product: ProductType, index: number) => (
-            <Link
-              href={`/produk/${product.id}`}
-              key={product.id}
-              className={styles.produk__content__item}
-              style={{ animationDelay: `${Math.min(index, 10) * 70}ms` }}
-            >
-              <div className={styles.produk__content__item__image}>
-                {product.image?.trim() ? (
-                  <img src={product.image} alt={product.name} width={200} height={200} />
-                ) : (
-                  <p className={styles.produk__content__item__fallback}>Gambar belum ada</p>
-                )}
-              </div>
+            ? (
+              <p className={styles.produk__content__empty}>Belum ada produk untuk ditampilkan.</p>
+            )
+            : showProducts
+              ? products.map((product: ProductType, index: number) => (
+                <Link
+                  href={`/produk/${product.id}`}
+                  key={product.id}
+                  className={styles.produk__content__item}
+                  style={{ animationDelay: `${Math.min(index, 10) * 70}ms` }}
+                >
+                  <div className={styles.produk__content__item__image}>
+                    {product.image?.trim() ? (
+                      <img src={product.image} alt={product.name} width={200} height={200} />
+                    ) : (
+                      <p className={styles.produk__content__item__fallback}>Gambar belum ada</p>
+                    )}
+                  </div>
 
-              <div className={styles.produk__content__item__details}>
-                <h4 className={styles.produk__content__item__name}>
-                  {product.name}
-                </h4>
+                  <div className={styles.produk__content__item__details}>
+                    <h4 className={styles.produk__content__item__name}>
+                      {product.name}
+                    </h4>
 
-                <p className={styles.produk__content__item__category}>
-                  {product.category}
-                </p>
+                    <p className={styles.produk__content__item__category}>
+                      {product.category}
+                    </p>
 
-                <p className={styles.produk__content__item__price}>
-                  Rp {formatRupiah(product.price)}
-                </p>
-              </div>
-            </Link>
-          ))
-          : null}
+                    <p className={styles.produk__content__item__price}>
+                      Rp {formatRupiah(product.price)}
+                    </p>
+                  </div>
+                </Link>
+              ))
+              : null}
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import { ProductType } from "@/views/product";
+import { normalizeProducts, ProductType } from "@/types/Product.type";
 import fetcher from "./fetcher";
 
 type ApiProductsResponse = {
@@ -29,7 +29,7 @@ const useProducts = (): UseProductsResult => {
   }
 
   return {
-    products: isPageLoading ? [] : (data?.data ?? []),
+    products: isPageLoading ? [] : normalizeProducts(data?.data),
     isLoading: isPageLoading,
   };
 };
