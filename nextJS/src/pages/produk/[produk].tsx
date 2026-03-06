@@ -54,10 +54,7 @@ const HalamanProduk = () => {
     }
 
     return (
-        <div style={{ padding: "16px" }}>
-            <p style={{ marginBottom: "12px", fontWeight: "bolder", fontSize: "24px" }}>
-                Detail Produk
-            </p>
+        <div>
             <DetailProduk products={data.data} />
         </div>
     );
