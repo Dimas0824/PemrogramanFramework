@@ -1,6 +1,7 @@
 import TampilanProduk from "../../views/product";
 import { ProductType } from "../../types/Product.type";
 import { retrieveProducts } from "@/utils/db/servicefirebase";
+import { revalidateEvents } from "swr/_internal";
 
 const halamanProdukStatic = (props: { products: ProductType[] }) => {
   const { products } = props;
@@ -26,6 +27,7 @@ export async function getStaticProps() {
       props: {
         products: [],
       },
+      revalidate: 10, // Revalidate data setiap 10 detik
     };
   }
 }
