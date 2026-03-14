@@ -1,6 +1,7 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
 import useSWR from "swr";
+import { useEffect, useState } from "react";
 import DetailProductRendering from "@/views/DetailProductRendering";
 import { normalizeProduct, ProductType } from "@/types/Product.type";
 import fetcher from "@/utils/swr/fetcher";
@@ -15,11 +16,18 @@ const CSRProductDetailPage = () => {
   const router = useRouter();
   const productId = typeof router.query.produk === "string" ? router.query.produk : undefined;
   const shouldFetch = router.isReady && Boolean(productId);
+  const [generatedAt, setGeneratedAt] = useState<string>();
 
   const { data, error, isLoading } = useSWR<ProductApiResponse>(
     shouldFetch ? `/api/produk/${productId}` : null,
     fetcher,
   );
+
+  useEffect(() => {
+    if (data) {
+      setGeneratedAt(new Date().toISOString());
+    }
+  }, [data]);
 
   const product = data?.data ? normalizeProduct(data.data) : null;
   const errorMessage = error
@@ -41,7 +49,7 @@ const CSRProductDetailPage = () => {
         product={product}
         isLoading={!router.isReady || isLoading}
         errorMessage={errorMessage}
-        generatedAt={data ? new Date().toISOString() : undefined}
+        generatedAt={generatedAt}
       />
     </>
   );

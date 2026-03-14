@@ -2,9 +2,18 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-    return NextResponse.redirect(new URL("/", request.url));
+    const isLogin = request.cookies.get('isLogin')?.value === 'true';
+
+    if (isLogin) {
+        return NextResponse.next();
+    }
+
+    const loginUrl = new URL('/login', request.url);
+    loginUrl.searchParams.set('from', request.nextUrl.pathname);
+
+    return NextResponse.redirect(loginUrl);
 }
 
 export const config = {
-    matcher: ["/produk", "/about"]
+    matcher: ['/products/:path*', '/produk/:path*', '/about']
 };

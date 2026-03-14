@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import Navbar from "../navbar";
 
-const disableNavbarRoutes = ["/auth/login", "/auth/register", "/404", "/_error"];
+const disableNavbarRoutes = ["/login", "/auth/login", "/auth/register", "/404", "/_error"];
 
 type AppShellProps = {
     children: React.ReactNode;
