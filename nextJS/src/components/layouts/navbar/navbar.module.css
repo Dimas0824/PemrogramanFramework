@@ -1,22 +1,86 @@
 .Navbar {
-  display: flex;
-  align-items: center; /* keep vertical centering */
-  justify-content: space-between;
-  padding: 0.75rem 1rem;
-  background-color: #171717;
-  color: #fff;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   width: 100%;
-  height: 60px;
+  height: 70px;
+  padding: 0 60px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background: linear-gradient(135deg, #0b1226, #1e3a8a);
+  color: #ffffff;
+
+  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.45);
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+}
+
+/* Logo / Brand */
+.Navbar_brand {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* Right Section */
+.Navbar_right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Welcome text */
+.Navbar_user {
+  font-size: 16px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+/* Button style */
+.Navbar_button {
+  padding: 8px 18px;
+  border: none;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* Sign In */
+.Navbar_button--primary {
+  background-color: #1e3a8a;
+  color: white;
+}
+
+.Navbar_button--primary:hover {
+  background-color: #162864;
+  transform: translateY(-2px);
+}
+
+/* Sign Out */
+.Navbar_button--danger {
+  background-color: #0f172a;
+  color: white;
+}
+
+.Navbar_button--danger:hover {
+  background-color: #050a19;
+  transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .Navbar {
+    padding: 0 20px;
+  }
+
+  .Navbar_brand {
+    font-size: 18px;
+  }
+
+  .Navbar_user {
+    display: none;
+  }
 }
 
 .Navbar a { color: inherit; }
-
-.SignButton {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  border-radius: 4px;
-  color: inherit;
-  padding: 0.35rem 0.9rem;
-  cursor: pointer;
-}
