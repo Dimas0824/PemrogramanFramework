@@ -24,7 +24,11 @@ export default function Profile(): JSX.Element {
                             <tbody>
                                 <tr className="border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
                                     <th className="px-8 py-5 font-semibold text-gray-600 bg-gray-50/50 w-1/3">Nama Lengkap</th>
-                                    <td className="px-8 py-5 text-gray-800 font-medium">{data?.user?.fullname}</td>
+                                    <td className="px-8 py-5 text-gray-800 font-medium">{data?.user?.fullname || "-"}</td>
+                                </tr>
+                                <tr className="border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
+                                    <th className="px-8 py-5 font-semibold text-gray-600 bg-gray-50/50">Email</th>
+                                    <td className="px-8 py-5 text-gray-800">{data?.user?.email || "-"}</td>
                                 </tr>
                                 <tr className="border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
                                     <th className="px-8 py-5 font-semibold text-gray-600 bg-gray-50/50">Nomor Absen</th>

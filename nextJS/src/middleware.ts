@@ -1,28 +1,5 @@
-import { getToken } from "next-auth/jwt";
-import { NextFetchEvent, NextMiddleware, NextRequest, NextResponse } from "next/server";
-
-function withAuth(
-    middleware: NextMiddleware,
-    requireAuth: string[] = []
-) {
-    return async (req: NextRequest, next: NextFetchEvent) => {
-        const pathname = req.nextUrl.pathname;
-
-        if (requireAuth.includes(pathname)) {
-            const token = await getToken({
-                req,
-                secret: process.env.NEXTAUTH_SECRET,
-            });
-
-            if (!token) {
-                const loginUrl = new URL("/", req.url);
-                return NextResponse.redirect(loginUrl);
-            }
-        }
-
-        return middleware(req, next);
-    };
-}
+import { NextResponse } from "next/server";
+import withAuth from "./Middleware/withAuth";
 
 export default withAuth(
     function middleware() {
@@ -30,3 +7,7 @@ export default withAuth(
     },
     ["/profile", "/profile/edit"]
 );
+
+export const config = {
+    matcher: ["/profile", "/profile/edit"],
+};
