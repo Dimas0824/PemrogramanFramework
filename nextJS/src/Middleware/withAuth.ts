@@ -1,7 +1,7 @@
 import { getToken } from "next-auth/jwt";
 import { NextFetchEvent, NextMiddleware, NextRequest, NextResponse } from "next/server";
 
-function withAuth(
+export default function withAuth(
     middleware: NextMiddleware,
     requireAuth: string[] = []
 ) {
@@ -23,10 +23,3 @@ function withAuth(
         return middleware(req, next);
     };
 }
-
-export default withAuth(
-    function middleware() {
-        return NextResponse.next();
-    },
-    ["/profile", "/profile/edit"]
-);
