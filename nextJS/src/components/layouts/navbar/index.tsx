@@ -1,15 +1,27 @@
-import { signIn } from 'next-auth/react';
-import styles from './navbar.module.css';
+import styles from "./navbar.module.css";
+import { signIn, signOut, useSession } from "next-auth/react";
 
 const Navbar = () => {
+    const { data } = useSession();
+    //const { data: session } = useSession()
+    // console.log("session", session)
+
     return (
         <div className={styles.Navbar}>
-            <div className='big'>
+            <div className="big">
                 Navbar
             </div>
-            <button className={styles.SignInButton} onClick={() => signIn()}>Sign In</button>
+            {data ? (
+                <button className={styles.SignButton} onClick={() => signOut()}>
+                    Sign Out
+                </button>
+            ) : (
+                <button className={styles.SignButton} onClick={() => signIn()}>
+                    Sign In
+                </button>
+            )}
         </div>
-    )
-}
+    );
+};
 
 export default Navbar;
