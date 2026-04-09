@@ -1,3 +1,4 @@
+import Script from "next/script";
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./navbar.module.css";
@@ -21,7 +22,7 @@ const Navbar = () => {
                 MyApp
             </div>
 
-            <div className={styles.Navbar_right}>
+            <div className={styles.Navbar_right} id="title">
                 {data ? (
                     <>
                         <div className={styles.Navbar_user}>
@@ -75,6 +76,9 @@ const Navbar = () => {
                     </button>
                 )}
             </div>
+            <Script id="title-script" strategy="lazyOnload">
+                {`document.getElementById('title').innerText = document.title;`}
+            </Script>
         </div>
     );
 };
