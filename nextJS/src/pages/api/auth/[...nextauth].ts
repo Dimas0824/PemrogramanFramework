@@ -13,19 +13,18 @@ export const authOptions: NextAuthOptions = {
         CredentialsProvider({
             name: "credentials",
             credentials: {
-                fullname: { label: "Full Name", type: "text" },
                 email: { label: "Email", type: "email" },
                 password: { label: "Password", type: "password" },
             },
             async authorize(credentials) {
-                if (!credentials?.fullname || !credentials?.email || !credentials?.password) {
+                if (!credentials?.email || !credentials?.password) {
                     return null;
                 }
 
                 const user = {
                     id: "1",
                     email: credentials?.email,
-                    fullname: credentials?.fullname,
+                    fullname: credentials?.fullname || "",
                 };
 
                 return user;
