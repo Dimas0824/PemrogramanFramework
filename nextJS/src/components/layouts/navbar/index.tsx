@@ -1,4 +1,4 @@
-import Script from "next/script";
+import Script from "next/dist/client/script";
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./navbar.module.css";
