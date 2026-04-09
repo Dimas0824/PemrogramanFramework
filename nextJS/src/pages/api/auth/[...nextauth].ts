@@ -1,4 +1,4 @@
-import { NextAuthOptions } from "next-auth";
+import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { signIn } from "../../../utils/db/servicefirebase";
 import bcrypt from "bcrypt";
@@ -6,6 +6,36 @@ import bcrypt from "bcrypt";
 export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
+  },
+
+  callbacks: {
+    async jwt({ token, account, profile, user }: any) {
+      if (account?.provider === "credentials" && user) {
+        token.email = user.email;
+        token.fullname = user.fullname;
+        token.role = user.role;
+      }
+
+      // console.log("jwt callback", { token, account, profile, user });
+      return token;
+    },
+
+    async session({ session, token }: any) {
+      if (token.email) {
+        session.user.email = token.email;
+      }
+
+      if (token.fullname) {
+        session.user.fullname = token.fullname;
+      }
+
+      if (token.role) {
+        session.user.role = token.role;
+      }
+
+      // console.log("session callback", { session, token });
+      return session;
+    },
   },
 
   secret: process.env.NEXTAUTH_SECRET,
@@ -38,6 +68,7 @@ export const authOptions: NextAuthOptions = {
               fullname: user.fullname,
               role: user.role,
             };
+            
           }
         }
 
@@ -46,3 +77,5 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
 };
+
+export default NextAuth(authOptions);
