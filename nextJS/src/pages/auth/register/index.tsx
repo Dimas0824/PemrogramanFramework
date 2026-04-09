@@ -7,12 +7,27 @@ const TampilanRegister = () => {
   const [error, setError] = useState("");
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    setError("");
+    setIsLoading(true);
     event.preventDefault();
-    const formData = new FormData(event.currentTarget);
+    const form = event.currentTarget;
+    const formData = new FormData(form);
 
     const email = formData.get("email") as string;
     const fullname = formData.get("fullname") as string;
     const password = formData.get("password") as string;
+
+    if (!email) {
+      setIsLoading(false);
+      setError("Email wajib diisi");
+      return;
+    }
+
+    if (password.length < 6) {
+      setIsLoading(false);
+      setError("Password minimal 6 karakter");
+      return;
+    }
 
     const response = await fetch("/api/register", {
       method: "POST",
@@ -25,21 +40,18 @@ const TampilanRegister = () => {
     const result = await response.json();
 
     if (response.status === 200) {
-      event.currentTarget.reset();
+      form.reset();
       setIsLoading(false);
       window.location.href = "/auth/login";
     } else {
       setIsLoading(false);
-      setError(
-        response.status === 400
-          ? "User already exists"
-          : "An error occurred"
-      );
+      setError(result.name || "An error occurred");
     }
   };
   return (
     <div className={style.register}>
       <h1 className={style.register__title}>Halaman Register</h1>
+      {error && <p className={style.register__error}>{error}</p>}
       <form className={style.register__form} onSubmit={handleSubmit}>
         <div className={style.register__form__item}>
           <label htmlFor="email" className={style.register__form__item__label}>
@@ -50,6 +62,7 @@ const TampilanRegister = () => {
             id="email"
             name="email"
             placeholder="Email"
+            required
             className={style.register__form__item__input}
           />
         </div>
@@ -76,13 +89,14 @@ const TampilanRegister = () => {
             id="password"
             name="password"
             placeholder="Password"
+            minLength={6}
             className={style.register__form__item__input}
           />
         </div>
 
         <div className={style.register__form__item}>
-          <button type="submit" className={style.button}>
-            Register
+          <button type="submit" className={style.button} disabled={isLoading}>
+            {isLoading ? "Loading..." : "Register"}
           </button>
         </div>
 
