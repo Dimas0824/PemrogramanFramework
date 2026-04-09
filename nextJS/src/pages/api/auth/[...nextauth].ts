@@ -1,61 +1,48 @@
-import NextAuth, { NextAuthOptions } from "next-auth";
+import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { signIn } from "../../../utils/db/servicefirebase";
+import bcrypt from "bcrypt";
 
 export const authOptions: NextAuthOptions = {
-    session: {
-        strategy: "jwt",
-    },
-    secret: process.env.NEXTAUTH_SECRET,
-    pages: {
-        signIn: "/auth/login",
-    },
-    providers: [
-        CredentialsProvider({
-            name: "credentials",
-            credentials: {
-                email: { label: "Email", type: "email" },
-                password: { label: "Password", type: "password" },
-            },
-            async authorize(credentials) {
-                if (!credentials?.email || !credentials?.password) {
-                    return null;
-                }
+  session: {
+    strategy: "jwt",
+  },
 
-                const user = {
-                    id: "1",
-                    email: credentials?.email,
-                    fullname: credentials?.fullname || "",
-                };
+  secret: process.env.NEXTAUTH_SECRET,
 
-                return user;
-            },
-        }),
-    ],
+  providers: [
+    CredentialsProvider({
+      name: "credentials",
+      credentials: {
+        // fullname: { label: "Full Name", type: "text" },
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
 
-    callbacks: {
-        async jwt({ token, account, profile, user }: any) {
-            if (account?.provider === "credentials" && user) {
-                token.email = user.email;
-                token.fullname = user.fullname;
-            }
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) return null;
 
-            // console.log("jwt callback", { token, account, profile, user })
-            return token;
-        },
+        const user: any = await signIn(credentials.email);
 
-        async session({ session, token }: any) {
-            if (token.email) {
-                session.user.email = token.email;
-            }
+        if (user) {
+          const isPasswordValid = await bcrypt.compare(
+            credentials.password,
+            user.password
+          );
 
-            if (token.fullname) {
-                session.user.fullname = token.fullname;
-            }
+          if (isPasswordValid) {
+            // Pastikan mengembalikan object user yang bersih
+            return {
+              id: user.id,
+              email: user.email,
+              fullname: user.fullname,
+              role: user.role,
+            };
+          }
+        }
 
-            // console.log("session callback", { session, token })
-            return session;
-        },
-    },
+        return null;
+      },
+    }),
+  ],
 };
-
-export default NextAuth(authOptions);
