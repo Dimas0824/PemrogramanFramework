@@ -1,3 +1,5 @@
+import Image from "next/image";
+import Link from "next/link";
 import styles from "./navbar.module.css";
 import { signIn, signOut, useSession } from "next-auth/react";
 
@@ -23,18 +25,39 @@ const Navbar = () => {
                 {data ? (
                     <>
                         <div className={styles.Navbar_user}>
-                            Welcome, {displayName}
+                            <span className={styles.Navbar_user_text}>
+                                Welcome, {displayName}
+                            </span>
+                            <span className={styles.Navbar_user_role}>
+                                Role: {user?.role || "member"}
+                            </span>
                         </div>
                         {avatarImage ? (
-                            <img
+                            <Image
                                 src={avatarImage}
                                 alt={displayName}
+                                width={42}
+                                height={42}
                                 className={styles.Navbar_user_image}
+                                unoptimized={false}
                             />
                         ) : (
                             <div className={styles.Navbar_user_avatarFallback}>
                                 {avatarInitial}
                             </div>
+                        )}
+                        <Link href="/profile" className={styles.Navbar_link}>
+                            Profile
+                        </Link>
+                        {user?.role === "admin" && (
+                            <Link href="/admin" className={styles.Navbar_link}>
+                                Admin
+                            </Link>
+                        )}
+                        {user?.role === "editor" && (
+                            <Link href="/editor" className={styles.Navbar_link}>
+                                Editor
+                            </Link>
                         )}
                         <button
                             className={`${styles.Navbar_button} ${styles["Navbar_button--danger"]}`}

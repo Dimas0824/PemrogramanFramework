@@ -1,12 +1,13 @@
 import Link from "next/link";
 import style from "../../pages/auth/login/login.module.scss";
-import { SyntheticEvent, useState } from "react";
-import { signIn } from "next-auth/react";
+import { SyntheticEvent, useEffect, useState } from "react";
+import { getProviders, signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 
 function TampilanLogin() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [availableProviders, setAvailableProviders] = useState<string[]>([]);
   const { push, query } = useRouter();
   const rawCallbackUrl = Array.isArray(query.callbackUrl)
     ? query.callbackUrl[0]
@@ -16,10 +17,22 @@ function TampilanLogin() {
       ? rawCallbackUrl
       : "/";
 
-  const handleGoogleLogin = async () => {
+  useEffect(() => {
+    const loadProviders = async () => {
+      const providers = await getProviders();
+      const providerIds = Object.keys(providers ?? {}).filter(
+        (provider) => provider !== "credentials"
+      );
+      setAvailableProviders(providerIds);
+    };
+
+    loadProviders();
+  }, []);
+
+  const handleOAuthLogin = async (provider: "google" | "github") => {
     setError("");
     setIsLoading(true);
-    await signIn("google", { callbackUrl });
+    await signIn(provider, { callbackUrl });
     setIsLoading(false);
   };
 
@@ -107,9 +120,29 @@ function TampilanLogin() {
             {isLoading ? "Loading..." : "Login"}
           </button>
           <br /><br />
-          <button type="button" onClick={handleGoogleLogin} className={style.button} disabled={isLoading}>
-            {isLoading ? "Loading..." : "Login with Google"}
-          </button>
+          {availableProviders.includes("google") && (
+            <>
+              <button
+                type="button"
+                onClick={() => handleOAuthLogin("google")}
+                className={style.button}
+                disabled={isLoading}
+              >
+                {isLoading ? "Loading..." : "Login with Google"}
+              </button>
+              <br /><br />
+            </>
+          )}
+          {availableProviders.includes("github") && (
+            <button
+              type="button"
+              onClick={() => handleOAuthLogin("github")}
+              className={style.button}
+              disabled={isLoading}
+            >
+              {isLoading ? "Loading..." : "Login with GitHub"}
+            </button>
+          )}
         </div>
 
         <p className={style.login__login_text}>

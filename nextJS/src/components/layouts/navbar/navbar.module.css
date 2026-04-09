@@ -31,9 +31,35 @@
 
 /* Welcome text */
 .Navbar_user {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.Navbar_user_text {
   font-size: 16px;
   font-weight: 500;
   opacity: 0.9;
+}
+
+.Navbar_user_role {
+  font-size: 12px;
+  font-weight: 600;
+  color: #bfdbfe;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.Navbar_link {
+  color: inherit;
+  text-decoration: none;
+  font-weight: 600;
+  opacity: 0.92;
+}
+
+.Navbar_link:hover {
+  opacity: 1;
 }
 
 /* Button style */
@@ -79,6 +105,10 @@
   }
 
   .Navbar_user {
+    display: none;
+  }
+
+  .Navbar_link {
     display: none;
   }
 }
