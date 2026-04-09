@@ -36,6 +36,18 @@ export const authOptions: NextAuthOptions = {
       // console.log("session callback", { session, token });
       return session;
     },
+
+    async redirect({ url, baseUrl }) {
+      if (url.startsWith("/")) {
+        return `${baseUrl}${url}`;
+      }
+
+      if (new URL(url).origin === baseUrl) {
+        return url;
+      }
+
+      return baseUrl;
+    },
   },
 
   secret: process.env.NEXTAUTH_SECRET,

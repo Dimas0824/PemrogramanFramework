@@ -31,8 +31,8 @@ export default function Profile(): JSX.Element {
                                     <td className="px-8 py-5 text-gray-800">{data?.user?.email || "-"}</td>
                                 </tr>
                                 <tr className="border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
-                                    <th className="px-8 py-5 font-semibold text-gray-600 bg-gray-50/50">Nomor Absen</th>
-                                    <td className="px-8 py-5 text-gray-800">14</td>
+                                    <th className="px-8 py-5 font-semibold text-gray-600 bg-gray-50/50">Role</th>
+                                    <td className="px-8 py-5 text-gray-800">{data?.user?.role || "-"}</td>
                                 </tr>
                             </tbody>
                         </table>
