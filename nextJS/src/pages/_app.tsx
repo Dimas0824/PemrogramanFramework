@@ -2,13 +2,16 @@ import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import AppShell from "@/components/layouts/AppShell";
 import { SessionProvider } from "next-auth/react";
+import { appSansFont } from "@/lib/fonts";
 
 export default function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   return (
-    <SessionProvider session={session}>
-      <AppShell>
-        <Component {...pageProps} />
-      </AppShell>
-    </SessionProvider>
+    <div className={appSansFont.className}>
+      <SessionProvider session={session}>
+        <AppShell>
+          <Component {...pageProps} />
+        </AppShell>
+      </SessionProvider>
+    </div>
   );
 }
