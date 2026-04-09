@@ -2,10 +2,15 @@ import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { signIn } from "../../../utils/db/servicefirebase";
 import bcrypt from "bcrypt";
+import GoogleProvider from "next-auth/providers/google";
 
 export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
+  },
+
+  pages: {
+    signIn: "/auth/login",
   },
 
   callbacks: {
@@ -14,9 +19,26 @@ export const authOptions: NextAuthOptions = {
         token.email = user.email;
         token.fullname = user.fullname;
         token.role = user.role;
+        token.image = user.image ?? token.image;
+        token.type = "credentials";
       }
 
-      // console.log("jwt callback", { token, account, profile, user });
+      //jika login dengan google, ambil informasi yang diperlukan ke token
+      if (account?.provider === "google") {
+        const data = {
+          fullname: profile?.name || user?.name || token.fullname,
+          email: profile?.email || user?.email || token.email,
+          image: user?.image || profile?.picture || token.image,
+          type: account.provider,
+        }
+
+        token.fullname = data.fullname;
+        token.email = data.email;
+        token.image = data.image;
+        token.type = data.type;
+        token.role = "user"; // Set role default untuk pengguna Google
+      }
+
       return token;
     },
 
@@ -29,11 +51,18 @@ export const authOptions: NextAuthOptions = {
         session.user.fullname = token.fullname;
       }
 
+      if (token.image !== undefined) {
+        session.user.image = token.image;
+      }
+
       if (token.role) {
         session.user.role = token.role;
       }
 
-      // console.log("session callback", { session, token });
+      if (token.type) {
+        session.user.type = token.type;
+      }
+
       return session;
     },
 
@@ -79,6 +108,8 @@ export const authOptions: NextAuthOptions = {
               email: user.email,
               fullname: user.fullname,
               role: user.role,
+              image: user.image || null,
+              type: "credentials",
             };
             
           }
@@ -86,6 +117,10 @@ export const authOptions: NextAuthOptions = {
 
         return null;
       },
+    }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
     }),
   ],
 };

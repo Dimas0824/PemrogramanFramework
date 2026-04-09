@@ -1,6 +1,6 @@
 import Link from "next/link";
 import style from "../../pages/auth/login/login.module.scss";
-import { useState } from "react";
+import { SyntheticEvent, useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 
@@ -8,11 +8,22 @@ function TampilanLogin() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const { push, query } = useRouter();
-  const callbackUrl = Array.isArray(query.callbackUrl)
+  const rawCallbackUrl = Array.isArray(query.callbackUrl)
     ? query.callbackUrl[0]
     : query.callbackUrl || "/";
+  const callbackUrl =
+    typeof rawCallbackUrl === "string" && rawCallbackUrl.startsWith("/")
+      ? rawCallbackUrl
+      : "/";
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleGoogleLogin = async () => {
+    setError("");
+    setIsLoading(true);
+    await signIn("google", { callbackUrl });
+    setIsLoading(false);
+  };
+
+  const handleSubmit = async (event: SyntheticEvent<HTMLFormElement>) => {
     setError("");
     setIsLoading(true);
     event.preventDefault();
@@ -94,6 +105,10 @@ function TampilanLogin() {
         <div className={style.login__form__item}>
           <button type="submit" className={style.button} disabled={isLoading}>
             {isLoading ? "Loading..." : "Login"}
+          </button>
+          <br /><br />
+          <button type="button" onClick={handleGoogleLogin} className={style.button} disabled={isLoading}>
+            {isLoading ? "Loading..." : "Login with Google"}
           </button>
         </div>
 

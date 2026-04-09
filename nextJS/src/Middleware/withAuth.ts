@@ -22,7 +22,8 @@ export default function withAuth(
 
       if (!token) {
         const url = new URL("/auth/login", req.url);
-        url.searchParams.set("callbackUrl", encodeURI(req.url));
+        const callbackUrl = `${req.nextUrl.pathname}${req.nextUrl.search}`;
+        url.searchParams.set("callbackUrl", callbackUrl);
         return NextResponse.redirect(url);
       }
 

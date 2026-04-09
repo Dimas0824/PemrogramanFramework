@@ -3,6 +3,13 @@ import { signIn, signOut, useSession } from "next-auth/react";
 
 const Navbar = () => {
     const { data }: any = useSession();
+    const user = data?.user;
+    const displayName = user?.fullname || user?.name || user?.email || "User";
+    const avatarImage =
+        typeof user?.image === "string" && user.image.trim().length > 0
+            ? user.image
+            : "";
+    const avatarInitial = displayName.charAt(0).toUpperCase();
     //const { data: session } = useSession()
     // console.log("session", session)
 
@@ -16,8 +23,19 @@ const Navbar = () => {
                 {data ? (
                     <>
                         <div className={styles.Navbar_user}>
-                            Welcome, {data.user?.fullname}
+                            Welcome, {displayName}
                         </div>
+                        {avatarImage ? (
+                            <img
+                                src={avatarImage}
+                                alt={displayName}
+                                className={styles.Navbar_user_image}
+                            />
+                        ) : (
+                            <div className={styles.Navbar_user_avatarFallback}>
+                                {avatarInitial}
+                            </div>
+                        )}
                         <button
                             className={`${styles.Navbar_button} ${styles["Navbar_button--danger"]}`}
                             onClick={() => signOut()}
