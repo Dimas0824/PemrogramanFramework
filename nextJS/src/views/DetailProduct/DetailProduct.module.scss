@@ -16,14 +16,9 @@
         border-radius: 10px;
         padding: 14px;
         box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
-
-        img {
-            width: 100%;
-            border-radius: 12px;
-            max-height: 420px;
-            object-fit: contain;
-            display: block;
-        }
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     &__info {
@@ -70,6 +65,20 @@
             box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
         }
     }
+}
+
+.productImage {
+    width: 100%;
+    height: auto;
+    max-height: 420px;
+    border-radius: 12px;
+    display: block;
+}
+
+.imageFallback {
+    margin: 0;
+    text-align: center;
+    color: #6f6f6f;
 }
 
 /* Responsive */

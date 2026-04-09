@@ -1,14 +1,28 @@
 // import { ProductType } from "@/types/Product.type";
+import Image from "next/image";
 import { ProductType } from "../../types/Product.type";
 import styles from "./DetailProduct.module.scss";
 
 const DetailProduk = ({ products }: { products: ProductType }) => {
+    const hasProductImage = Boolean(products.image?.trim());
+
     return (
         <>
             <h1 className={styles.title}>Detail Produk</h1>
             <div className={styles.produkdetail}>
                 <div className={styles.produkdetail__image}>
-                    <img src={products.image && products.image} alt={products.name} />
+                    {hasProductImage ? (
+                        <Image
+                            src={products.image}
+                            alt={products.name}
+                            width={900}
+                            height={900}
+                            sizes="(max-width: 768px) 100vw, 45vw"
+                            className={styles.productImage}
+                        />
+                    ) : (
+                        <p className={styles.imageFallback}>Gambar produk belum tersedia.</p>
+                    )}
                 </div>
 
                 <div className={styles.produkdetail__info}>

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ProductType } from "@/types/Product.type";
 import ProductRenderingNav from "@/components/rendering/ProductRenderingNav";
@@ -79,7 +80,13 @@ const DetailProductRendering = ({
             <article className={styles.detailCard}>
               <div className={styles.imagePanel}>
                 {product.image?.trim() ? (
-                  <img src={product.image} alt={product.name} />
+                  <Image
+                    src={product.image}
+                    alt={product.name}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 45vw"
+                    className={styles.productImage}
+                  />
                 ) : (
                   <p className={styles.imageFallback}>Gambar produk belum tersedia.</p>
                 )}

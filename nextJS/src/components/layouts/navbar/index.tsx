@@ -39,8 +39,8 @@ const Navbar = () => {
                                 alt={displayName}
                                 width={42}
                                 height={42}
+                                sizes="42px"
                                 className={styles.Navbar_user_image}
-                                unoptimized={false}
                             />
                         ) : (
                             <div className={styles.Navbar_user_avatarFallback}>

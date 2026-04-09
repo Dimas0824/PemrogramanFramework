@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ProductType } from "@/types/Product.type";
 import ProductRenderingNav from "@/components/rendering/ProductRenderingNav";
@@ -81,7 +82,13 @@ const ProductRenderingList = ({
                 >
                   <div className={styles.imageWrap}>
                     {product.image?.trim() ? (
-                      <img src={product.image} alt={product.name} />
+                      <Image
+                        src={product.image}
+                        alt={product.name}
+                        fill
+                        sizes="(max-width: 768px) 50vw, (max-width: 1240px) 33vw, 280px"
+                        className={styles.productImage}
+                      />
                     ) : (
                       <p className={styles.fallback}>Gambar belum tersedia</p>
                     )}

@@ -1,4 +1,5 @@
 import styles from "../../pages/produk/product.module.scss";
+import Image from "next/image";
 import Link from "next/link";
 import { ProductType } from "@/types/Product.type";
 import { ReactNode } from "react";
@@ -49,7 +50,14 @@ const TampilanProduk = ({
       >
         <div className={styles.produk__content__item__image}>
           {product.image?.trim() ? (
-            <img src={product.image} alt={product.name} width={200} height={200} />
+            <Image
+              src={product.image}
+              alt={product.name}
+              width={400}
+              height={400}
+              sizes="(max-width: 640px) 50vw, (max-width: 1200px) 33vw, 220px"
+              className={styles.productImage}
+            />
           ) : (
             <p className={styles.produk__content__item__fallback}>Gambar belum ada</p>
           )}

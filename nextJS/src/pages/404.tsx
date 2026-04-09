@@ -23,6 +23,7 @@ const Custom404 = () => {
                         className={styles.error_image}
                         width={340}
                         height={240}
+                        sizes="(max-width: 768px) 80vw, 340px"
                         priority
                     />
                     <Link href="/" className={styles.error_button}>

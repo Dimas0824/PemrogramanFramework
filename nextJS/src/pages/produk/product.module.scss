@@ -47,12 +47,6 @@
         align-items: center;
         justify-content: center;
 
-        img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          display: block;
-        }
       }
 
       &__fallback {
@@ -175,6 +169,13 @@
       color: #d32f2f;
     }
   }
+}
+
+.productImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 @keyframes skeletonShimmer {
