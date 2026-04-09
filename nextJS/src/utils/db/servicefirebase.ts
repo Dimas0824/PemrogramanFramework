@@ -7,6 +7,7 @@ import {
   query,
   addDoc,
   where,
+  updateDoc,
 } from "firebase/firestore";
 import app from "./firebase";
 import bcrypt from "bcrypt";
@@ -86,5 +87,71 @@ export async function signUp(
           message: error.message,
         });
       });
+  }
+}
+
+type GoogleUserData = {
+  email: string;
+  fullname?: string;
+  image?: string | null;
+  type?: string;
+  role?: string;
+};
+
+type GoogleSignInResult = {
+  status: boolean;
+  message: string;
+  data?: GoogleUserData;
+};
+
+export async function signInWithGoogle(userData: GoogleUserData): Promise<GoogleSignInResult> {
+  try {
+    if (!userData.email) {
+      return {
+        status: false,
+        message: "Google account email is required",
+      };
+    }
+
+    const q = query(
+      collection(db, "users"),
+      where("email", "==", userData.email)
+    );
+
+    const querySnapshot = await getDocs(q);
+    const data: any = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    if (data.length > 0) {
+      // User sudah ada, update data
+      userData.role = data[0].role;
+      await updateDoc(doc(db, "users", data[0].id), userData);
+
+      return {
+        status: true,
+        message: "User registered and logged in with Google",
+        data: userData,
+      };
+    } else {
+      // User baru, tambah data
+      userData.role = "member";
+      await addDoc(collection(db, "users"), userData);
+
+      return {
+        status: true,
+        message: "User registered and logged in with Google",
+        data: userData,
+      };
+    }
+  } catch (error: any) {
+    const message =
+      error instanceof Error ? error.message : "Failed to register user with Google";
+
+    return {
+      status: false,
+      message,
+    };
   }
 }

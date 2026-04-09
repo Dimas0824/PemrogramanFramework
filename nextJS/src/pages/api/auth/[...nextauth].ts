@@ -1,6 +1,6 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { signIn } from "../../../utils/db/servicefirebase";
+import { signIn, signInWithGoogle } from "../../../utils/db/servicefirebase";
 import bcrypt from "bcrypt";
 import GoogleProvider from "next-auth/providers/google";
 
@@ -14,6 +14,21 @@ export const authOptions: NextAuthOptions = {
   },
 
   callbacks: {
+    async signIn({ account, profile, user }: any) {
+      if (account?.provider !== "google") {
+        return true;
+      }
+
+      const result = await signInWithGoogle({
+        fullname: profile?.name || user?.name || "",
+        email: profile?.email || user?.email || "",
+        image: user?.image || profile?.picture || null,
+        type: account.provider,
+      });
+
+      return result.status;
+    },
+
     async jwt({ token, account, profile, user }: any) {
       if (account?.provider === "credentials" && user) {
         token.email = user.email;
@@ -30,7 +45,7 @@ export const authOptions: NextAuthOptions = {
           email: profile?.email || user?.email || token.email,
           image: user?.image || profile?.picture || token.image,
           type: account.provider,
-        }
+        };
 
         token.fullname = data.fullname;
         token.email = data.email;
