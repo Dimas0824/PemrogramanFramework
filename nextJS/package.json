@@ -9,8 +9,9 @@
     "lint": "eslint",
     "seed:products": "node scripts/seed-products.mjs",
     "seed:events": "node scripts/seed-events.mjs",
-    "test": "jest --passWithNoTests -u",
-    "test:coverage": "npm run test -- --coverage",
+    "test": "jest --passWithNoTests --maxWorkers=50%",
+    "test:coverage": "jest --passWithNoTests --coverage --maxWorkers=30% --forceExit",
+    "test:update-snapshots": "jest --passWithNoTests -u --maxWorkers=50%",
     "test:watch": "jest --watch"
   },
   "dependencies": {
