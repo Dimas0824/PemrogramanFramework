@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { Manrope } from "next/font/google";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import RenderingNav from "@/components/rendering/RenderingNav";
 import type { CommunityEvent } from "@/data/communityEvents";
 import styles from "@/styles/rendering-pages.module.css";
@@ -18,7 +18,6 @@ const formatDate = (value: string) =>
 
 const CSRPage = () => {
   const [events, setEvents] = useState<CommunityEvent[]>([]);
-  const [generatedAt, setGeneratedAt] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
 
@@ -32,7 +31,6 @@ const CSRPage = () => {
 
         const payload: EventResponse = await response.json();
         setEvents(payload.data);
-        setGeneratedAt(payload.generatedAt);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Terjadi kesalahan.");
       } finally {
@@ -42,11 +40,6 @@ const CSRPage = () => {
 
     void loadEvents();
   }, []);
-
-  const updateLabel = useMemo(() => {
-    if (!generatedAt) return "-";
-    return new Date(generatedAt).toLocaleString("id-ID");
-  }, [generatedAt]);
 
   return (
     <>
