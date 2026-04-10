@@ -82,7 +82,7 @@ const TampilanProduk = ({
 
   return (
     <div className={styles.produk}>
-      <h1 className={styles.produk__title}>Daftar Produk</h1>
+      <h1 className={styles.produk__title} data-testid="title">Product Page</h1>
 
       <div className={styles.produk__content}>
         {errorMessage ? <p className={styles.produk__content__error}>{errorMessage}</p> : null}

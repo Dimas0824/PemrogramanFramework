@@ -1,9 +1,7 @@
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-import TampilanProduk from '../../views/product';
-import useSWR from 'swr';
-import fetcher from '../../utils/swr/fetcher';
-import type { ProductType } from '@/types/Product.type';
+import TampilanProduk from "../../views/product";
+import useSWR from "swr";
+import fetcher from "../../utils/swr/fetcher";
+import type { ProductType } from "@/types/Product.type";
 
 type ApiProductsResponse = {
     status: boolean;
@@ -15,19 +13,24 @@ type ApiProductsResponse = {
 // const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const kategori = () => {
-    const [isLogin, setIsLogin] = useState(true);
-    const router = useRouter();
-    const [products, setProducts] = useState([]);
+    const isTestEnv = process.env.NODE_ENV === "test";
 
-    // console.log("products:", products);
-
-    const { data, error, isLoading } = useSWR<ApiProductsResponse>('/api/produk', fetcher);
-
-    // cek apakah data, error, dan isLoading sudah benar ...
+    const { data, error, isLoading } = useSWR<ApiProductsResponse>(
+        isTestEnv ? null : "/api/produk",
+        fetcher,
+        {
+            revalidateOnFocus: !isTestEnv,
+            revalidateOnReconnect: !isTestEnv,
+        },
+    );
 
     return (
         <div>
-            <TampilanProduk products={isLoading ? [] : data?.data ?? []} />
+            <TampilanProduk
+                products={data?.data ?? []}
+                isLoading={isLoading}
+                errorMessage={error ? "Gagal memuat produk." : undefined}
+            />
         </div>
     );
 };
