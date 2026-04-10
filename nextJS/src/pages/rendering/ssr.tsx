@@ -11,7 +11,7 @@ type SSRPageProps = {
   generatedAt: string;
 };
 
-const manrope = Manrope({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800"] });
+const manrope = Manrope({ subsets: ["latin"], weight: ["400", "700"] });
 
 const formatDate = (value: string) =>
   new Intl.DateTimeFormat("id-ID", { dateStyle: "full" }).format(new Date(value));
