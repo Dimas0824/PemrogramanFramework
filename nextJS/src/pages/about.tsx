@@ -2,7 +2,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import styles from '@/styles/about.module.scss'
 
-export default function About() {
+const AboutPage = () => {
     return (
         <>
             <Head>
@@ -14,7 +14,7 @@ export default function About() {
                 <div className={styles.container}>
                     <section className={styles.card}>
                         <p className={styles.eyebrow}>About Page</p>
-                        <h1 className={styles.title}>Halaman About</h1>
+                        <h1 data-testid="title" className={styles.title}>About Page</h1>
                         <p className={styles.description}>
                             Halaman ini dibuat untuk demonstrasi routing Next.js dan proteksi route menggunakan middleware.
                             Saat user belum login, akses ke halaman ini akan diarahkan ke halaman login terlebih dahulu.
@@ -47,3 +47,5 @@ export default function About() {
         </>
     )
 }
+
+export default AboutPage;

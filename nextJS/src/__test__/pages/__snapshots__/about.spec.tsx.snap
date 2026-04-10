@@ -21,8 +21,9 @@ exports[`About Page renders about page correctly 1`] = `
             </p>
             <h1
               class="title"
+              data-testid="title"
             >
-              Halaman About
+              About Page
             </h1>
             <p
               class="description"
@@ -113,8 +114,9 @@ exports[`About Page renders about page correctly 1`] = `
           </p>
           <h1
             class="title"
+            data-testid="title"
           >
-            Halaman About
+            About Page
           </h1>
           <p
             class="description"
