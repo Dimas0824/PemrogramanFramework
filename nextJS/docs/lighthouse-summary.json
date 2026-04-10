@@ -1,0 +1,18 @@
+{
+  "generatedAt": "2026-04-09T23:51:50.401Z",
+  "requestedUrl": "http://localhost:3000/",
+  "finalUrl": "http://localhost:3000/",
+  "categories": {
+    "performance": 69,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 90
+  },
+  "metrics": {
+    "fcp": "0.8 s",
+    "lcp": "7.3 s",
+    "speedIndex": "2.8 s",
+    "tbt": "310 ms",
+    "cls": "0.003"
+  }
+}
