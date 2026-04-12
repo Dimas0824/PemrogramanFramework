@@ -2,16 +2,15 @@ import { render, screen } from "@testing-library/react";
 import BlogPostPage from "../../pages/blog/[slug]";
 import CategoryPage from "../../pages/category/[...slug]";
 import ShopPage from "../../pages/shop/[[...slug]]";
-
-const mockedUseRouter = jest.fn();
+import { mockUseRouter, setMockRouter } from "../utils/mock-router";
 
 jest.mock("next/router", () => ({
-  useRouter: () => mockedUseRouter(),
+  useRouter: () => mockUseRouter(),
 }));
 
 describe("Dynamic Route Pages", () => {
   it("renders blog post slug when router is ready", () => {
-    mockedUseRouter.mockReturnValue({
+    setMockRouter({
       isReady: true,
       query: {
         slug: "belajar-nextjs",
@@ -24,7 +23,7 @@ describe("Dynamic Route Pages", () => {
   });
 
   it("renders loading state when blog router is not ready", () => {
-    mockedUseRouter.mockReturnValue({
+    setMockRouter({
       isReady: false,
       query: {},
     });
@@ -35,7 +34,7 @@ describe("Dynamic Route Pages", () => {
   });
 
   it("renders category slug list", () => {
-    mockedUseRouter.mockReturnValue({
+    setMockRouter({
       query: {
         slug: ["teknologi", "frontend"],
       },
@@ -49,7 +48,7 @@ describe("Dynamic Route Pages", () => {
   });
 
   it("renders shop information from slug", () => {
-    mockedUseRouter.mockReturnValue({
+    setMockRouter({
       query: {
         slug: ["sepatu", "running"],
       },

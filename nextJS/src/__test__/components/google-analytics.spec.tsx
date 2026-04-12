@@ -1,14 +1,8 @@
 import { render } from "@testing-library/react";
-
-const routerEvents = {
-  on: jest.fn(),
-  off: jest.fn(),
-};
+import { mockUseRouter, setMockRouter } from "../utils/mock-router";
 
 jest.mock("next/router", () => ({
-  useRouter: () => ({
-    events: routerEvents,
-  }),
+  useRouter: () => mockUseRouter(),
 }));
 
 jest.mock("next/script", () => ({
@@ -18,6 +12,10 @@ jest.mock("next/script", () => ({
 
 describe("GoogleAnalytics", () => {
   const originalEnv = process.env.NEXT_PUBLIC_GA_ID;
+
+  beforeEach(() => {
+    setMockRouter();
+  });
 
   afterEach(() => {
     process.env.NEXT_PUBLIC_GA_ID = originalEnv;

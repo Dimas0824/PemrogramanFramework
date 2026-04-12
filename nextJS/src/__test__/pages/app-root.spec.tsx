@@ -1,7 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import App from "../../pages/_app";
-
-const mockedUseRouter = jest.fn();
+import { mockUseRouter, setMockRouter } from "../utils/mock-router";
 
 jest.mock("next/dynamic", () => () => function MockedDynamicComponent() {
   return <div>Google Analytics Mock</div>;
@@ -15,7 +14,7 @@ jest.mock("next-auth/react", () => ({
 }));
 
 jest.mock("next/router", () => ({
-  useRouter: () => mockedUseRouter(),
+  useRouter: () => mockUseRouter(),
 }));
 
 jest.mock("next/font/google", () => ({
@@ -31,7 +30,7 @@ jest.mock("next/dist/client/script", () => ({
 
 describe("_app Page", () => {
   it("renders the app wrapper and page component", () => {
-    mockedUseRouter.mockReturnValue({ pathname: "/" });
+    setMockRouter({ pathname: "/" });
 
     const MockPage = () => <div>Mocked Page Content</div>;
 

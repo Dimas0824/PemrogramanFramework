@@ -3,21 +3,10 @@ import CSRPage from "../../pages/rendering/csr";
 import SSRPage, { getServerSideProps } from "../../pages/rendering/ssr";
 import SSGPage, { getStaticProps } from "../../pages/rendering/ssg";
 import { retrieveCollection } from "../../utils/db/servicefirebase";
+import { mockUseRouter, setMockRouter } from "../utils/mock-router";
 
 jest.mock("next/router", () => ({
-  useRouter() {
-    return {
-      pathname: "/rendering/csr",
-      asPath: "/rendering/csr",
-      query: {},
-      push: jest.fn(),
-      events: {
-        on: jest.fn(),
-        off: jest.fn(),
-      },
-      isReady: true,
-    };
-  },
+  useRouter: () => mockUseRouter(),
 }));
 
 jest.mock("next/font/google", () => ({
@@ -32,6 +21,10 @@ describe("Rendering Pages", () => {
   beforeEach(() => {
     global.fetch = jest.fn();
     jest.clearAllMocks();
+    setMockRouter({
+      pathname: "/rendering/csr",
+      asPath: "/rendering/csr",
+    });
   });
 
   it("renders CSR page with fetched events", async () => {

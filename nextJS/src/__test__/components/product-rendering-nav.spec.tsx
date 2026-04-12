@@ -1,23 +1,19 @@
 import { render, screen } from "@testing-library/react";
 import ProductRenderingNav from "@/components/rendering/ProductRenderingNav";
+import { mockUseRouter, setMockRouter } from "../utils/mock-router";
 
 jest.mock("next/router", () => ({
-  useRouter() {
-    return {
-      pathname: "/rendering/produk/ssg",
-      asPath: "/rendering/produk/ssg",
-      query: {},
-      push: jest.fn(),
-      events: {
-        on: jest.fn(),
-        off: jest.fn(),
-      },
-      isReady: true,
-    };
-  },
+  useRouter: () => mockUseRouter(),
 }));
 
 describe("ProductRenderingNav", () => {
+  beforeEach(() => {
+    setMockRouter({
+      pathname: "/rendering/produk/ssg",
+      asPath: "/rendering/produk/ssg",
+    });
+  });
+
   it("renders product rendering links", () => {
     render(<ProductRenderingNav />);
 

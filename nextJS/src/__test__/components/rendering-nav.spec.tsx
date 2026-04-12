@@ -1,23 +1,19 @@
 import { render, screen } from "@testing-library/react";
 import RenderingNav from "@/components/rendering/RenderingNav";
+import { mockUseRouter, setMockRouter } from "../utils/mock-router";
 
 jest.mock("next/router", () => ({
-  useRouter() {
-    return {
-      pathname: "/rendering/csr",
-      asPath: "/rendering/csr",
-      query: {},
-      push: jest.fn(),
-      events: {
-        on: jest.fn(),
-        off: jest.fn(),
-      },
-      isReady: true,
-    };
-  },
+  useRouter: () => mockUseRouter(),
 }));
 
 describe("RenderingNav", () => {
+  beforeEach(() => {
+    setMockRouter({
+      pathname: "/rendering/csr",
+      asPath: "/rendering/csr",
+    });
+  });
+
   it("renders navigation links", () => {
     render(<RenderingNav />);
 

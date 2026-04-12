@@ -1,10 +1,9 @@
 import { render, screen } from "@testing-library/react";
 import AppShell from "@/components/layouts/AppShell";
-
-const mockedUseRouter = jest.fn();
+import { mockUseRouter, setMockRouter } from "../utils/mock-router";
 
 jest.mock("next/router", () => ({
-  useRouter: () => mockedUseRouter(),
+  useRouter: () => mockUseRouter(),
 }));
 
 jest.mock("next-auth/react", () => ({
@@ -20,7 +19,7 @@ jest.mock("next/dist/client/script", () => ({
 
 describe("AppShell", () => {
   it("shows navbar on regular routes", () => {
-    mockedUseRouter.mockReturnValue({ pathname: "/" });
+    setMockRouter({ pathname: "/" });
 
     render(
       <AppShell>
@@ -33,7 +32,7 @@ describe("AppShell", () => {
   });
 
   it("hides navbar on auth routes", () => {
-    mockedUseRouter.mockReturnValue({ pathname: "/auth/login" });
+    setMockRouter({ pathname: "/auth/login" });
 
     render(
       <AppShell>
