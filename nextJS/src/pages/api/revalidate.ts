@@ -10,24 +10,11 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<Data>,
 ) {
-
     if (req.query.data === "produk") {
-
-        if (req.query.token !== process.env.REVALIDATE_TOKEN) {
-            return res.status(401).json({
-                revalidated: false,
-                message: "Insert correct token",
-            });
-        }
-
-        try {
-            await res.revalidate("/produk/static");
-            return res.status(200).json({ revalidated: true });
-        } catch (error) {
-            console.error("Error in API route:", error);
-            res.status(500).send({ revalidated: false });
-        }
-
+        return res.status(200).json({
+            revalidated: false,
+            message: "Detail produk sekarang memakai SSR, jadi on-demand revalidation tidak diperlukan.",
+        });
     }
 
     return res.json({

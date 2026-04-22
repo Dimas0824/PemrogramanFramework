@@ -1,8 +1,13 @@
+import type { GetServerSideProps } from "next";
 import DetailProduk from "../../views/DetailProduct";
-import { normalizeProduct, normalizeProducts, ProductType } from "@/types/Product.type";
-import { retrieveDataByID, retrieveProducts } from "@/utils/db/servicefirebase";
+import { normalizeProduct, ProductType } from "@/types/Product.type";
+import { retrieveDataByID } from "@/utils/db/servicefirebase";
 
-const HalamanProduk = ({ product }: { product: ProductType }) => {
+type ProductDetailPageProps = {
+    product: ProductType;
+};
+
+const HalamanProduk = ({ product }: ProductDetailPageProps) => {
     //digunakan client-side rendering/
     // const Router = useRouter();
 
@@ -15,46 +20,35 @@ const HalamanProduk = ({ product }: { product: ProductType }) => {
 
 export default HalamanProduk;
 
-//digunakan server-side rendering/
-//export async function getServerSideProps({ params }: { params: { produk: string } }) {
-//  const res = await fetch(`http://localhost:3000/api/produk/${params.produk}`);
-//  const respone = await res.json();
-//  // console.log("Data produk yang diambil dari API:", respone);
-//  return {
-//    props: {
-//      product: respone.data, // Pastikan untuk memberikan nilai default jika data tidak tersedia
-//    },
-//  };
-//}
+export const getServerSideProps: GetServerSideProps<ProductDetailPageProps> = async ({
+    params,
+}) => {
+    const productId = typeof params?.produk === "string" ? params.produk : "";
 
-//digunakan static-site generation/
-export async function getStaticPaths() {
-    const products = normalizeProducts(await retrieveProducts("products"));
-
-    const paths = products.map((product: ProductType) => ({
-        params: { produk: product.id },
-    }));
-    // console.log("Paths yang dihasilkan untuk produk:", paths); // Debugging: Tampilkan paths yang dihasilkan
-
-    return {
-        paths,
-        fallback: false,
-    };
-}
-
-export async function getStaticProps({ params }: { params: { produk: string } }) {
-    const rawProduct = await retrieveDataByID("products", params.produk);
-    const product = rawProduct ? normalizeProduct(rawProduct) : null;
-
-    if (!product) {
+    if (!productId) {
         return {
             notFound: true,
         };
     }
 
-    return {
-        props: {
-            product,
-        },
-    };
-}
+    try {
+        const rawProduct = await retrieveDataByID("products", productId);
+        const product = rawProduct ? normalizeProduct(rawProduct) : null;
+
+        if (!product) {
+            return {
+                notFound: true,
+            };
+        }
+
+        return {
+            props: {
+                product,
+            },
+        };
+    } catch {
+        return {
+            notFound: true,
+        };
+    }
+};
