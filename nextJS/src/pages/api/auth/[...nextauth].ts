@@ -8,6 +8,36 @@ import {
   verifyUserCredentials,
 } from "../../../utils/db/servicefirebase";
 
+const isLocalhostUrl = (value: string) => /^https?:\/\/localhost(?::\d+)?\/?$/i.test(value);
+
+const resolveNextAuthUrl = () => {
+  const configuredUrl = process.env.NEXTAUTH_URL?.trim();
+  const vercelHost =
+    process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim() ||
+    process.env.VERCEL_URL?.trim();
+
+  if (!vercelHost) {
+    return configuredUrl;
+  }
+
+  const vercelUrl = vercelHost.startsWith("http")
+    ? vercelHost
+    : `https://${vercelHost}`;
+
+  // In production, avoid localhost callback hosts that break OAuth on Vercel.
+  if (process.env.NODE_ENV === "production" && (!configuredUrl || isLocalhostUrl(configuredUrl))) {
+    return vercelUrl;
+  }
+
+  return configuredUrl;
+};
+
+const normalizedNextAuthUrl = resolveNextAuthUrl();
+
+if (normalizedNextAuthUrl) {
+  process.env.NEXTAUTH_URL = normalizedNextAuthUrl;
+}
+
 const oauthProviders = ["google", "github"] as const;
 
 const providers: NextAuthOptions["providers"] = [
