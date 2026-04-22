@@ -40,12 +40,12 @@ export const getStaticPaths: GetStaticPaths = async () => {
       paths: products.map((product) => ({
         params: { produk: product.id },
       })),
-      fallback: false,
+      fallback: "blocking",
     };
   } catch {
     return {
       paths: [],
-      fallback: false,
+      fallback: "blocking",
     };
   }
 };
@@ -64,7 +64,7 @@ export const getStaticProps: GetStaticProps<SSGProductDetailPageProps> = async (
     const product = rawProduct ? normalizeProduct(rawProduct) : null;
 
     if (!product) {
-      return { notFound: true };
+      return { notFound: true, revalidate: 60 };
     }
 
     return {
@@ -73,9 +73,10 @@ export const getStaticProps: GetStaticProps<SSGProductDetailPageProps> = async (
         product,
         generatedAt: new Date().toISOString(),
       },
+      revalidate: 60,
     };
   } catch {
-    return { notFound: true };
+    return { notFound: true, revalidate: 60 };
   }
 };
 

@@ -42,6 +42,7 @@ export const getStaticProps: GetStaticProps<SSGProductListPageProps> = async () 
         products,
         generatedAt: new Date().toISOString(),
       },
+      revalidate: 60,
     };
   } catch {
     return {
@@ -50,6 +51,7 @@ export const getStaticProps: GetStaticProps<SSGProductListPageProps> = async () 
         generatedAt: new Date().toISOString(),
         errorMessage: "Gagal memuat daftar produk statis.",
       },
+      revalidate: 60,
     };
   }
 };
