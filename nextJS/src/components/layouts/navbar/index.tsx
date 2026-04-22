@@ -21,7 +21,7 @@ const Navbar = () => {
                 MyApp
             </div>
 
-            <div className={styles.Navbar_right} id="title">
+            <div className={styles.Navbar_right}>
                 {data ? (
                     <>
                         <div className={styles.Navbar_user}>
