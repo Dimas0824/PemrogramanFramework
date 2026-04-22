@@ -42,3 +42,5 @@ next-env.d.ts
 .env.local
 .context7.md
 rendering-produk-routes.md
+
+.env*.local

@@ -43,7 +43,7 @@ const TampilanProduk = ({
   } else if (showProducts) {
     content = products.map((product: ProductType, index: number) => (
       <Link
-        href={`/produk/${product.id}`}
+        href={`/products/${product.id}`}
         key={product.id}
         className={styles.produk__content__item}
         style={{ animationDelay: `${Math.min(index, 10) * 70}ms` }}

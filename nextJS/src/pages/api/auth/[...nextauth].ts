@@ -13,8 +13,17 @@ const isLocalhostUrl = (value: string) => /^https?:\/\/localhost(?::\d+)?\/?$/i.
 const resolveNextAuthUrl = () => {
   const configuredUrl = process.env.NEXTAUTH_URL?.trim();
   const vercelHost =
-    process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim() ||
-    process.env.VERCEL_URL?.trim();
+    process.env.VERCEL_URL?.trim() ||
+    process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
+
+  if (configuredUrl) {
+    const shouldReplaceLocalhost =
+      process.env.NODE_ENV === "production" && isLocalhostUrl(configuredUrl);
+
+    if (!shouldReplaceLocalhost) {
+      return configuredUrl;
+    }
+  }
 
   if (!vercelHost) {
     return configuredUrl;
@@ -24,8 +33,8 @@ const resolveNextAuthUrl = () => {
     ? vercelHost
     : `https://${vercelHost}`;
 
-  // In production, avoid localhost callback hosts that break OAuth on Vercel.
-  if (process.env.NODE_ENV === "production" && (!configuredUrl || isLocalhostUrl(configuredUrl))) {
+  // In production, prefer the active deployment host on Vercel.
+  if (process.env.NODE_ENV === "production") {
     return vercelUrl;
   }
 
@@ -36,6 +45,12 @@ const normalizedNextAuthUrl = resolveNextAuthUrl();
 
 if (normalizedNextAuthUrl) {
   process.env.NEXTAUTH_URL = normalizedNextAuthUrl;
+}
+
+const authSecret = process.env.NEXTAUTH_SECRET?.trim() || process.env.AUTH_SECRET?.trim();
+
+if (authSecret) {
+  process.env.NEXTAUTH_SECRET = authSecret;
 }
 
 const oauthProviders = ["google", "github"] as const;
@@ -192,7 +207,7 @@ export const authOptions: NextAuthOptions = {
     },
   },
 
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: authSecret,
 
   providers,
 };

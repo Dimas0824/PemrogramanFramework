@@ -1,6 +1,8 @@
 import { getToken } from "next-auth/jwt";
 import { NextFetchEvent, NextMiddleware, NextRequest, NextResponse } from "next/server";
 
+const authSecret = process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET;
+
 const roleProtectedRoutes = {
   admin: ["/admin"],
   editor: ["/editor"],
@@ -35,7 +37,7 @@ export default function withAuth(
     if (isMatchedPath(pathname, requireAuth) || requiredRole) {
       const token = await getToken({
         req,
-        secret: process.env.NEXTAUTH_SECRET,
+        secret: authSecret,
       });
 
       if (!token) {
