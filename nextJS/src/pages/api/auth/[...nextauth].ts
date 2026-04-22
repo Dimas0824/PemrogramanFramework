@@ -2,56 +2,14 @@ import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
+import { applyAuthEnvironment } from "@/utils/auth/env";
 import {
   findUserByEmail,
   signInWithOAuth,
   verifyUserCredentials,
 } from "../../../utils/db/servicefirebase";
 
-const isLocalhostUrl = (value: string) => /^https?:\/\/localhost(?::\d+)?\/?$/i.test(value);
-
-const resolveNextAuthUrl = () => {
-  const configuredUrl = process.env.NEXTAUTH_URL?.trim();
-  const vercelHost =
-    process.env.VERCEL_URL?.trim() ||
-    process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
-
-  if (configuredUrl) {
-    const shouldReplaceLocalhost =
-      process.env.NODE_ENV === "production" && isLocalhostUrl(configuredUrl);
-
-    if (!shouldReplaceLocalhost) {
-      return configuredUrl;
-    }
-  }
-
-  if (!vercelHost) {
-    return configuredUrl;
-  }
-
-  const vercelUrl = vercelHost.startsWith("http")
-    ? vercelHost
-    : `https://${vercelHost}`;
-
-  // In production, prefer the active deployment host on Vercel.
-  if (process.env.NODE_ENV === "production") {
-    return vercelUrl;
-  }
-
-  return configuredUrl;
-};
-
-const normalizedNextAuthUrl = resolveNextAuthUrl();
-
-if (normalizedNextAuthUrl) {
-  process.env.NEXTAUTH_URL = normalizedNextAuthUrl;
-}
-
-const authSecret = process.env.NEXTAUTH_SECRET?.trim() || process.env.AUTH_SECRET?.trim();
-
-if (authSecret) {
-  process.env.NEXTAUTH_SECRET = authSecret;
-}
+const { authSecret } = applyAuthEnvironment();
 
 const oauthProviders = ["google", "github"] as const;
 const blockedRedirectPrefixes = ["/api/auth"];
@@ -146,6 +104,13 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
     async signIn({ account, profile, user }: any) {
+      console.info("[NextAuth] signIn callback", {
+        provider: account?.provider || "",
+        type: account?.type || "",
+        userEmail: user?.email || profile?.email || "",
+        hasUser: Boolean(user),
+      });
+
       if (!account?.provider || !oauthProviders.includes(account.provider)) {
         return true;
       }
@@ -155,6 +120,13 @@ export const authOptions: NextAuthOptions = {
         email: profile?.email || user?.email || "",
         image: user?.image || profile?.picture || null,
         type: account.provider,
+      });
+
+      console.info("[NextAuth] OAuth persistence result", {
+        provider: account.provider,
+        status: result.status,
+        message: result.message,
+        email: profile?.email || user?.email || "",
       });
 
       return result.status;
@@ -195,6 +167,15 @@ export const authOptions: NextAuthOptions = {
         token.role = data.role;
       }
 
+      if (account?.provider) {
+        console.info("[NextAuth] jwt callback", {
+          provider: account.provider,
+          email: token.email || "",
+          role: token.role || "",
+          type: token.type || "",
+        });
+      }
+
       return token;
     },
 
@@ -219,11 +200,25 @@ export const authOptions: NextAuthOptions = {
         session.user.type = token.type;
       }
 
+      console.info("[NextAuth] session callback", {
+        email: session.user.email || "",
+        role: session.user.role || "",
+        type: session.user.type || "",
+      });
+
       return session;
     },
 
     async redirect({ url, baseUrl }) {
-      return getSafeRedirectUrl(url, baseUrl);
+      const safeUrl = getSafeRedirectUrl(url, baseUrl);
+
+      console.info("[NextAuth] redirect callback", {
+        requestedUrl: url,
+        baseUrl,
+        safeUrl,
+      });
+
+      return safeUrl;
     },
   },
 

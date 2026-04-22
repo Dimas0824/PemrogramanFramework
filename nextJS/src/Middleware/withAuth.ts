@@ -1,7 +1,12 @@
 import { getToken } from "next-auth/jwt";
 import { NextFetchEvent, NextMiddleware, NextRequest, NextResponse } from "next/server";
+import {
+  applyAuthEnvironment,
+  getObservedSessionCookieNames,
+  isSecureAuthRequest,
+} from "@/utils/auth/env";
 
-const authSecret = process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET;
+const { authSecret } = applyAuthEnvironment();
 
 const roleProtectedRoutes = {
   admin: ["/admin"],
@@ -26,6 +31,17 @@ function getRequiredRole(pathname: string) {
   return null;
 }
 
+function attachDebugHeaders(
+  response: NextResponse,
+  values: Record<string, string>
+) {
+  Object.entries(values).forEach(([key, value]) => {
+    response.headers.set(key, value);
+  });
+
+  return response;
+}
+
 export default function withAuth(
   middleware: NextMiddleware,
   requireAuth: string[] = []
@@ -33,22 +49,58 @@ export default function withAuth(
   return async (req: NextRequest, next: NextFetchEvent) => {
     const pathname = req.nextUrl.pathname;
     const requiredRole = getRequiredRole(pathname);
+    const secureCookie = isSecureAuthRequest(req);
+    const observedCookies = getObservedSessionCookieNames(req);
 
     if (isMatchedPath(pathname, requireAuth) || requiredRole) {
       const token = await getToken({
         req,
         secret: authSecret,
+        secureCookie,
       });
 
       if (!token) {
         const url = new URL("/auth/login", req.url);
         const callbackUrl = `${req.nextUrl.pathname}${req.nextUrl.search}`;
         url.searchParams.set("callbackUrl", callbackUrl);
-        return NextResponse.redirect(url);
+        url.searchParams.set("authDebug", "missing-token");
+        url.searchParams.set("authCookieMode", secureCookie ? "secure" : "standard");
+        url.searchParams.set("authCookies", observedCookies.join(",") || "none");
+
+        console.warn("[withAuth] Missing token for protected route", {
+          pathname,
+          callbackUrl,
+          requiredRole,
+          secureCookie,
+          observedCookies,
+          hasAuthSecret: Boolean(authSecret),
+          nextAuthUrl: process.env.NEXTAUTH_URL || "",
+          host: req.headers.get("host") || "",
+          forwardedProto: req.headers.get("x-forwarded-proto") || "",
+        });
+
+        return attachDebugHeaders(NextResponse.redirect(url), {
+          "x-auth-debug-reason": "missing-token",
+          "x-auth-cookie-mode": secureCookie ? "secure" : "standard",
+          "x-auth-cookies": observedCookies.join(",") || "none",
+          "x-auth-path": callbackUrl,
+        });
       }
 
       if (requiredRole && token.role !== requiredRole) {
-        return NextResponse.redirect(new URL("/", req.url));
+        console.warn("[withAuth] Role mismatch", {
+          pathname,
+          requiredRole,
+          tokenRole: token.role || "",
+          email: token.email || "",
+        });
+
+        return attachDebugHeaders(NextResponse.redirect(new URL("/", req.url)), {
+          "x-auth-debug-reason": "role-mismatch",
+          "x-auth-required-role": requiredRole,
+          "x-auth-token-role": String(token.role || ""),
+          "x-auth-path": pathname,
+        });
       }
     }
 

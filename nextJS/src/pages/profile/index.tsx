@@ -1,10 +1,32 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import React, { JSX } from 'react'
+import React, { JSX, useEffect } from 'react'
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
 
 export default function Profile(): JSX.Element {
-    const { data }: any = useSession();
+    const { asPath, query } = useRouter();
+    const { data, status }: any = useSession();
+
+    useEffect(() => {
+        console.info("[ProfilePage] Session snapshot", {
+            path: asPath,
+            status,
+            query,
+            user: data?.user
+                ? {
+                    email: data.user.email,
+                    fullname: data.user.fullname,
+                    role: data.user.role,
+                    type: data.user.type,
+                }
+                : null,
+            authCookies: document.cookie
+                .split(";")
+                .map((cookie) => cookie.trim())
+                .filter((cookie) => cookie.startsWith("next-auth") || cookie.startsWith("__Secure-next-auth")),
+        });
+    }, [asPath, data, query, status]);
 
     return (
         <>

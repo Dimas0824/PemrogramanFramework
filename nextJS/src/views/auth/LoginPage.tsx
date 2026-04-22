@@ -1,7 +1,7 @@
 import Link from "next/link";
 import style from "../../pages/auth/login/login.module.scss";
 import { SyntheticEvent, useEffect, useState } from "react";
-import { getProviders, signIn } from "next-auth/react";
+import { getProviders, signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 
 const blockedCallbackPrefixes = ["/api/auth"];
@@ -55,7 +55,8 @@ function TampilanLogin() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [availableProviders, setAvailableProviders] = useState<string[]>([]);
-  const { push, query } = useRouter();
+  const { data: session, status } = useSession();
+  const { asPath, push, query } = useRouter();
   const rawCallbackUrl = Array.isArray(query.callbackUrl)
     ? query.callbackUrl[0]
     : query.callbackUrl || "/";
@@ -73,9 +74,55 @@ function TampilanLogin() {
     loadProviders();
   }, []);
 
+  useEffect(() => {
+    if (!query.authDebug) {
+      return;
+    }
+
+    const debugInfo = {
+      reason: Array.isArray(query.authDebug) ? query.authDebug[0] : query.authDebug,
+      callbackUrl,
+      cookieMode: Array.isArray(query.authCookieMode)
+        ? query.authCookieMode[0]
+        : query.authCookieMode,
+      cookies: Array.isArray(query.authCookies)
+        ? query.authCookies[0]
+        : query.authCookies,
+    };
+
+    console.warn("[LoginPage] Auth redirect debug", debugInfo);
+  }, [callbackUrl, query.authCookieMode, query.authCookies, query.authDebug]);
+
+  useEffect(() => {
+    console.info("[LoginPage] Session snapshot", {
+      path: asPath,
+      status,
+      user: session?.user
+        ? {
+            email: session.user.email,
+            fullname: session.user.fullname,
+            role: session.user.role,
+            type: session.user.type,
+          }
+        : null,
+      authCookies: document.cookie
+        .split(";")
+        .map((cookie) => cookie.trim())
+        .filter((cookie) => cookie.startsWith("next-auth") || cookie.startsWith("__Secure-next-auth")),
+    });
+  }, [asPath, session, status]);
+
   const handleOAuthLogin = async (provider: "google" | "github") => {
     setError("");
     setIsLoading(true);
+    console.info("[LoginPage] OAuth signIn start", {
+      provider,
+      callbackUrl,
+      path: asPath,
+      authDebug: query.authDebug,
+      authCookieMode: query.authCookieMode,
+      authCookies: query.authCookies,
+    });
     await signIn(provider, { callbackUrl });
     setIsLoading(false);
   };
@@ -113,6 +160,14 @@ function TampilanLogin() {
         callbackUrl,
       });
 
+      console.info("[LoginPage] Credentials signIn result", {
+        ok: res?.ok,
+        error: res?.error,
+        status: res?.status,
+        url: res?.url,
+        callbackUrl,
+      });
+
       if (res?.error) {
         setIsLoading(false);
         setError(res.error || "Login failed");
@@ -126,7 +181,11 @@ function TampilanLogin() {
       }
 
       setIsLoading(false);
-      await push(getSafeCallbackUrl(res.url || callbackUrl));
+      const nextUrl = getSafeCallbackUrl(res.url || callbackUrl);
+      console.info("[LoginPage] Redirect after credentials login", {
+        nextUrl,
+      });
+      await push(nextUrl);
     } catch {
       setIsLoading(false);
       setError("Wrong email or password");
