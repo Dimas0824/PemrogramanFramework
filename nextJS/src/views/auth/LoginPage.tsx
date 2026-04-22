@@ -4,6 +4,53 @@ import { SyntheticEvent, useEffect, useState } from "react";
 import { getProviders, signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 
+const blockedCallbackPrefixes = ["/api/auth"];
+const blockedCallbackPaths = new Set(["/auth/login", "/login"]);
+
+function getSafeCallbackUrl(value: unknown) {
+  if (typeof value !== "string") {
+    return "/";
+  }
+
+  const normalizedValue = value.trim();
+
+  if (!normalizedValue) {
+    return "/";
+  }
+
+  let safePath = normalizedValue;
+
+  if (!normalizedValue.startsWith("/")) {
+    try {
+      const parsedUrl = new URL(normalizedValue);
+      const currentOrigin =
+        typeof window !== "undefined" ? window.location.origin : parsedUrl.origin;
+
+      if (parsedUrl.origin !== currentOrigin) {
+        return "/";
+      }
+
+      safePath = `${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}`;
+    } catch {
+      return "/";
+    }
+  }
+
+  if (!safePath.startsWith("/") || safePath.startsWith("//")) {
+    return "/";
+  }
+
+  if (blockedCallbackPaths.has(safePath)) {
+    return "/";
+  }
+
+  if (blockedCallbackPrefixes.some((prefix) => safePath.startsWith(prefix))) {
+    return "/";
+  }
+
+  return safePath;
+}
+
 function TampilanLogin() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -12,10 +59,7 @@ function TampilanLogin() {
   const rawCallbackUrl = Array.isArray(query.callbackUrl)
     ? query.callbackUrl[0]
     : query.callbackUrl || "/";
-  const callbackUrl =
-    typeof rawCallbackUrl === "string" && rawCallbackUrl.startsWith("/")
-      ? rawCallbackUrl
-      : "/";
+  const callbackUrl = getSafeCallbackUrl(rawCallbackUrl);
 
   useEffect(() => {
     const loadProviders = async () => {
@@ -75,8 +119,14 @@ function TampilanLogin() {
         return;
       }
 
+      if (!res?.ok) {
+        setIsLoading(false);
+        setError("Login failed");
+        return;
+      }
+
       setIsLoading(false);
-      await push(callbackUrl);
+      await push(getSafeCallbackUrl(res.url || callbackUrl));
     } catch {
       setIsLoading(false);
       setError("Wrong email or password");

@@ -54,6 +54,34 @@ if (authSecret) {
 }
 
 const oauthProviders = ["google", "github"] as const;
+const blockedRedirectPrefixes = ["/api/auth"];
+const blockedRedirectPaths = new Set(["/auth/login", "/login"]);
+
+function getSafeRedirectUrl(url: string, baseUrl: string) {
+  const isBlockedPath = (pathname: string) =>
+    blockedRedirectPaths.has(pathname) ||
+    blockedRedirectPrefixes.some((prefix) => pathname.startsWith(prefix));
+
+  try {
+    if (url.startsWith("/")) {
+      if (url.startsWith("//") || isBlockedPath(url)) {
+        return baseUrl;
+      }
+
+      return `${baseUrl}${url}`;
+    }
+
+    const parsedUrl = new URL(url);
+
+    if (parsedUrl.origin !== baseUrl || isBlockedPath(parsedUrl.pathname)) {
+      return baseUrl;
+    }
+
+    return parsedUrl.toString();
+  } catch {
+    return baseUrl;
+  }
+}
 
 const providers: NextAuthOptions["providers"] = [
   CredentialsProvider({
@@ -195,15 +223,7 @@ export const authOptions: NextAuthOptions = {
     },
 
     async redirect({ url, baseUrl }) {
-      if (url.startsWith("/")) {
-        return `${baseUrl}${url}`;
-      }
-
-      if (new URL(url).origin === baseUrl) {
-        return url;
-      }
-
-      return baseUrl;
+      return getSafeRedirectUrl(url, baseUrl);
     },
   },
 
